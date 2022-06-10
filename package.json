@@ -1,0 +1,20 @@
+{
+  "name": "cli-file-manager",
+  "version": "0.1.0",
+  "description": "Node.js cli file manager",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShinkarenkoMaxim/cli-file-manager.git"
+  },
+  "author": "Shinkarenko Maxim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShinkarenkoMaxim/cli-file-manager/issues"
+  },
+  "homepage": "https://github.com/ShinkarenkoMaxim/cli-file-manager#readme"
+}
