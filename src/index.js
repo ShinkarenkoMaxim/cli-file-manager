@@ -1,6 +1,5 @@
-import { getUsername } from './utils/args.js';
-import { setupInterface } from './utils/interface.js';
+import CLIInterface from './utils/interface.js';
 
-const userName = getUsername();
+const cli = new CLIInterface();
 
-setupInterface(userName);
+cli.init();
