@@ -3,7 +3,7 @@ import * as readline from 'readline';
 
 // Utils modules
 import { getUsername } from './args.js';
-import { changeDirectory, listDir } from './fs.js';
+import { changeDirectory, listDir } from './navigation.js';
 
 export default class CLIInterface {
   cwd;
