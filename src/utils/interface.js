@@ -5,6 +5,7 @@ import * as readline from 'readline';
 // Utils modules
 import { getUsername } from './args.js';
 import { changeDirectory, listDir } from './navigation.js';
+import { cat, touch, rn, remove, cp, mv } from './files.js';
 
 export default class CLIInterface {
   cwd;
@@ -62,6 +63,7 @@ export default class CLIInterface {
       const options = input.replace(command, '').trim() || [];
 
       let targetDir;
+      let targetPath;
       let result;
 
       // Filter by commands
@@ -92,6 +94,54 @@ export default class CLIInterface {
           break;
         case 'ls':
           await listDir(this.cwd);
+
+          break;
+        case 'cat':
+          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
+
+          result = await cat(targetPath);
+          if (result) {
+            process.stdout.write(result);
+          }
+
+          break;
+        case 'add':
+          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
+
+          await touch(targetPath);
+
+          break;
+        case 'rn': {
+          const paths = options.split(' '); // Split paths. We cannot use spaces in path
+          const oldPath = resolve(this.cwd, paths[0]);
+          const newPath = resolve(this.cwd, paths[1]);
+
+          await rn(oldPath, newPath);
+
+          break;
+        }
+        case 'cp': {
+          const paths = options.split(' '); // Split paths. We cannot use spaces in path
+          const sourcePath = resolve(this.cwd, paths[0]);
+          const destPath = resolve(this.cwd, paths[1]);
+
+          await cp(sourcePath, destPath);
+
+          break;
+        }
+        case 'mv': {
+          const paths = options.split(' '); // Split paths. We cannot use spaces in path
+          const sourcePath = resolve(this.cwd, paths[0]);
+          const destPath = resolve(this.cwd, paths[1]);
+
+          await mv(sourcePath, destPath);
+
+          break;
+        }
+        case 'rm':
+          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
+
+          await remove(targetPath);
 
           break;
         default:
