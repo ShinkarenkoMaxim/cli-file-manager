@@ -1,4 +1,5 @@
 import { homedir } from 'os';
+import { resolve } from 'path';
 import * as readline from 'readline';
 
 // Utils modules
@@ -50,11 +51,16 @@ export default class CLIInterface {
       // If input data is empty
       if (input == '') {
         console.log('Invalid input');
+
+        // Send new prompt
+        this.cli.prompt();
+
         return;
       }
 
       const command = input.split(' ')[0];
-      const options = input.split(' ').slice(1) || [];
+      const options = input.replace(command, '').trim() || [];
+
       let targetDir;
       let result;
 
@@ -62,6 +68,7 @@ export default class CLIInterface {
       switch (command) {
         case 'up':
           targetDir = '../';
+
           result = await changeDirectory(this.cwd, targetDir);
           if (result) {
             this.cwd = result;
@@ -72,15 +79,11 @@ export default class CLIInterface {
 
           break;
         case 'cd':
-          // Must be 1 option - path to directory
-          if (options.length < 1 || options.length > 1) {
-            console.log('Invalid input');
-          } else {
-            targetDir = options[0];
-            result = await changeDirectory(this.cwd, targetDir);
-            if (result) {
-              this.cwd = result;
-            }
+          targetDir = options; // Parse all entered text after command as path
+
+          result = await changeDirectory(this.cwd, targetDir);
+          if (result) {
+            this.cwd = result;
           }
 
           // Update prompt message after change working directory

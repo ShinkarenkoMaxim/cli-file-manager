@@ -1,4 +1,4 @@
-import { access, readdir } from 'node:fs/promises';
+import { access, readdir, lstat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 export const listDir = async (targetDir) => {
@@ -16,8 +16,15 @@ export const changeDirectory = async (cwd, targetDir) => {
 
   try {
     const path = resolve(cwd, targetDir);
-    await access(path);
-    result = path;
+    const stats = await lstat(path);
+
+    // We cannot move to files. Only in directories
+    if (!stats.isDirectory()) {
+      console.log('Operation failed');
+    } else {
+      await access(path);
+      result = path;
+    }
   } catch (err) {
     console.log('Operation failed');
   }
