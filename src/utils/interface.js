@@ -6,6 +6,7 @@ import * as readline from 'readline';
 import { getUsername } from './args.js';
 import { changeDirectory, listDir } from './navigation.js';
 import { cat, touch, rn, remove, cp, mv } from './files.js';
+import { hash } from './hash.js';
 
 export default class CLIInterface {
   cwd;
@@ -142,6 +143,17 @@ export default class CLIInterface {
           targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
 
           await remove(targetPath);
+
+          break;
+        case 'hash':
+          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
+
+          result = await hash(targetPath);
+          if (result) {
+            console.log(result);
+          }
+
+          break;
 
           break;
         default:
