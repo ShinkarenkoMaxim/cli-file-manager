@@ -7,6 +7,13 @@ import { getUsername } from './args.js';
 import { changeDirectory, listDir } from './navigation.js';
 import { cat, touch, rn, remove, cp, mv } from './files.js';
 import { hash } from './hash.js';
+import {
+  printEOL,
+  printCpusInfo,
+  printHomedir,
+  printSystemUsername,
+  printArch,
+} from './os.js';
 
 export default class CLIInterface {
   cwd;
@@ -154,6 +161,44 @@ export default class CLIInterface {
           }
 
           break;
+        case 'os':
+          const allowedSubArgs = [
+            '--EOL',
+            '--cpus',
+            '--homedir',
+            '--username',
+            '--architecture',
+          ];
+          if (allowedSubArgs.includes(options)) {
+            let operationResult;
+
+            switch (options) {
+              case '--EOL':
+                operationResult = printEOL();
+
+                break;
+              case '--cpus':
+                operationResult = printCpusInfo();
+
+                break;
+              case '--homedir':
+                operationResult = printHomedir();
+
+                break;
+              case '--username':
+                operationResult = printSystemUsername();
+
+                break;
+              case '--architecture':
+                operationResult = printArch();
+
+                break;
+            }
+
+            console.log(operationResult);
+          } else {
+            console.log('Invalid input');
+          }
 
           break;
         default:
