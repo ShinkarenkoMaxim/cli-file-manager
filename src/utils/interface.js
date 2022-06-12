@@ -13,7 +13,7 @@ import {
   printSystemUsername,
   printArch,
 } from './os.js';
-
+import { compress, decompress } from './archive.js';
 import { ERROR, getWelcomeMsg } from './constants.js';
 
 export default class CLIInterface {
@@ -177,6 +177,18 @@ export default class CLIInterface {
           } else {
             console.log(ERROR.INVALID);
           }
+
+          break;
+        case 'compress':
+          paths = options.split(' '); // Split paths. We cannot use spaces in path
+
+          compress(this.cwd, paths);
+
+          break;
+        case 'decompress':
+          paths = options.split(' '); // Split paths. We cannot use spaces in path
+
+          decompress(this.cwd, paths);
 
           break;
         default:
