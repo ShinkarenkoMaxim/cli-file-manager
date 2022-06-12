@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import {
   readFile,
   access,
@@ -7,56 +8,75 @@ import {
   copyFile,
 } from 'node:fs/promises';
 
-export const cat = async (path) => {
+import { ERROR } from './constants.js';
+
+export const cat = async (cwd, path) => {
   let result = null;
 
   try {
-    await access(path);
-    result = await readFile(path, { encoding: 'UTF-8' });
+    const filePath = resolve(cwd, path);
+
+    await access(filePath);
+
+    result = await readFile(filePath, { encoding: 'UTF-8' });
   } catch (err) {
-    console.log('Operation failed');
+    console.log(ERROR.FAILED);
   }
 
   return result;
 };
 
-export const touch = async (path) => {
+export const touch = async (cwd, path) => {
   try {
-    await writeFile(path, '', { flag: 'wx' });
+    const writePath = resolve(cwd, path);
+
+    await writeFile(writePath, '', { flag: 'wx' });
   } catch (err) {
-    console.log('Operation failed');
+    console.log(err);
+    console.log(ERROR.FAILED);
   }
 };
 
-export const rn = async (oldFile, newFile) => {
+export const rn = async (cwd, paths) => {
   try {
+    const oldFile = resolve(cwd, paths[0]);
+    const newFile = resolve(cwd, paths[1]);
+
     await rename(oldFile, newFile);
   } catch (err) {
-    console.log('Operation failed');
+    console.log(ERROR.FAILED);
   }
 };
 
-export const cp = async (source, dest) => {
+export const cp = async (cwd, paths) => {
   try {
+    const source = resolve(cwd, paths[0]);
+    const dest = resolve(cwd, paths[1]);
+
     await copyFile(source, dest);
   } catch (err) {
-    console.log('Operation failed');
+    console.log(ERROR.FAILED);
   }
 };
 
-export const mv = async (source, dest) => {
+export const mv = async (cwd, paths) => {
   try {
+    const source = resolve(cwd, paths[0]);
+    const dest = resolve(cwd, paths[1]);
+
     await copyFile(source, dest);
     await rm(source);
   } catch (err) {
-    console.log('Operation failed');
+    console.log(ERROR.FAILED);
   }
 };
 
-export const remove = async (path) => {
+export const remove = async (cwd, path) => {
   try {
-    await rm(path);
+    const pathToRemove = resolve(cwd, path);
+
+    await rm(pathToRemove);
   } catch (err) {
-    console.log('Operation failed');
+    console.log(ERROR.FAILED);
   }
 };

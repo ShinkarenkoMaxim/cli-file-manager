@@ -1,14 +1,18 @@
-import crypto from 'crypto';
+import { resolve } from 'path';
 import { readFile } from 'node:fs/promises';
+import crypto from 'crypto';
 
-export const hash = async (path) => {
+import { ERROR } from './constants.js';
+
+export const hash = async (cwd, path) => {
   let result = null;
 
   try {
-    const data = await readFile(path);
+    const filePath = resolve(cwd, path);
+    const data = await readFile(filePath);
     result = crypto.createHash('sha256').update(data).digest('hex');
   } catch (err) {
-    console.log('Operation failed');
+    console.log(ERROR.FAILED);
   }
 
   return result;

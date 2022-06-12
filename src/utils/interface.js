@@ -1,5 +1,4 @@
 import { homedir } from 'os';
-import { resolve } from 'path';
 import * as readline from 'readline';
 
 // Utils modules
@@ -15,6 +14,8 @@ import {
   printArch,
 } from './os.js';
 
+import { ERROR, getWelcomeMsg } from './constants.js';
+
 export default class CLIInterface {
   cwd;
   username;
@@ -27,10 +28,8 @@ export default class CLIInterface {
   }
 
   init() {
-    const WELCOME_MSG = `Welcome to the File Manager, ${this.username}!\n`;
-
     // Show welcome Message
-    console.log(WELCOME_MSG);
+    console.log(getWelcomeMsg(this.username));
 
     // Initialize readline instance
     this.cli = readline.createInterface({
@@ -70,16 +69,13 @@ export default class CLIInterface {
       const command = input.split(' ')[0];
       const options = input.replace(command, '').trim() || [];
 
-      let targetDir;
-      let targetPath;
       let result;
+      let paths;
 
       // Filter by commands
       switch (command) {
         case 'up':
-          targetDir = '../';
-
-          result = await changeDirectory(this.cwd, targetDir);
+          result = await changeDirectory(this.cwd, '../');
           if (result) {
             this.cwd = result;
           }
@@ -89,9 +85,7 @@ export default class CLIInterface {
 
           break;
         case 'cd':
-          targetDir = options; // Parse all entered text after command as path
-
-          result = await changeDirectory(this.cwd, targetDir);
+          result = await changeDirectory(this.cwd, options);
           if (result) {
             this.cwd = result;
           }
@@ -105,57 +99,40 @@ export default class CLIInterface {
 
           break;
         case 'cat':
-          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
-
-          result = await cat(targetPath);
+          result = await cat(this.cwd, options);
           if (result) {
             process.stdout.write(result);
           }
 
           break;
         case 'add':
-          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
-
-          await touch(targetPath);
+          await touch(this.cwd, options);
 
           break;
-        case 'rn': {
-          const paths = options.split(' '); // Split paths. We cannot use spaces in path
-          const oldPath = resolve(this.cwd, paths[0]);
-          const newPath = resolve(this.cwd, paths[1]);
+        case 'rn':
+          paths = options.split(' '); // Split paths. We cannot use spaces in path
 
-          await rn(oldPath, newPath);
+          await rn(this.cwd, paths);
 
           break;
-        }
-        case 'cp': {
-          const paths = options.split(' '); // Split paths. We cannot use spaces in path
-          const sourcePath = resolve(this.cwd, paths[0]);
-          const destPath = resolve(this.cwd, paths[1]);
+        case 'cp':
+          paths = options.split(' '); // Split paths. We cannot use spaces in path
 
-          await cp(sourcePath, destPath);
+          await cp(this.cwd, paths);
 
           break;
-        }
-        case 'mv': {
-          const paths = options.split(' '); // Split paths. We cannot use spaces in path
-          const sourcePath = resolve(this.cwd, paths[0]);
-          const destPath = resolve(this.cwd, paths[1]);
+        case 'mv':
+          paths = options.split(' '); // Split paths. We cannot use spaces in path
 
-          await mv(sourcePath, destPath);
+          await mv(this.cwd, paths);
 
           break;
-        }
         case 'rm':
-          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
-
-          await remove(targetPath);
+          await remove(this.cwd, options);
 
           break;
         case 'hash':
-          targetPath = resolve(this.cwd, options); // Parse all entered text after command as filename and save in options
-
-          result = await hash(targetPath);
+          result = await hash(this.cwd, options);
           if (result) {
             console.log(result);
           }
@@ -169,6 +146,7 @@ export default class CLIInterface {
             '--username',
             '--architecture',
           ];
+
           if (allowedSubArgs.includes(options)) {
             let operationResult;
 
@@ -197,13 +175,13 @@ export default class CLIInterface {
 
             console.log(operationResult);
           } else {
-            console.log('Invalid input');
+            console.log(ERROR.INVALID);
           }
 
           break;
         default:
           // If command not found
-          console.log('Invalid input');
+          console.log(ERROR.INVALID);
 
           break;
       }
